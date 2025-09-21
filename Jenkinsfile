@@ -11,7 +11,7 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying to production environment...'
-                    // Add your deployment commands here
+                    echo 'Using credentials securely...'
                 }
             }
         }
