@@ -1,9 +1,5 @@
 pipeline {
     agent any
-    environment {
-        // Define any environment variables here
-        DEPLOY_ENV = 'production'
-    }
     stages {
         stage('Build') {
             steps {
