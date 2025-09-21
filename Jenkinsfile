@@ -1,13 +1,8 @@
 pipeline {
     agent any
-    parameters {
-        string(name: 'ENVIRONMENT', defaultValue: 'staging', description: 'Target environment for deployment')
-    }
+
     stages {
         stage('Build') {
-            when {
-                expression { params.ENVIRONMENT != 'production' && params.ENVIRONMENT == 'staging' }
-            }
             steps {
                 echo 'Building the application...'
                 // Add your build commands here, e.g., sh 'mvn clean package'
