@@ -12,12 +12,6 @@ pipeline {
             }
         }
         stage('Deploy to Production') {
-            when {
-                expression { env.BRANCH_NAME == 'main' }
-                expression { env.DEPLOY_ENV == 'production' }
-            } else {
-                echo 'Skipping deployment: Not on main branch or not in production environment.'
-            }
             steps {
                 script {
                     echo 'Deploying to production environment...'
