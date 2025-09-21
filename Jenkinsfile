@@ -3,7 +3,8 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Building the application...'
+                echo 'Building the application...' 
+                echo 'Using credentials securely...'
                 // Add your build commands here, e.g., sh 'mvn clean package'
             }
         }
