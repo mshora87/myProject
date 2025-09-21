@@ -1,27 +1,22 @@
 pipeline {
     agent any
-    parameters {
-        string(name: 'ENVIRONMENT', defaultValue: 'staging', description: 'Target environment for deployment')
+    environment {
+        // Define any environment variables here
+        DEPLOY_ENV = 'production'
     }
     stages {
         stage('Build') {
-            when {
-                expression { params.ENVIRONMENT != 'production' && params.ENVIRONMENT == 'staging' }
-            }
             steps {
                 echo 'Building the application...'
                 // Add your build commands here, e.g., sh 'mvn clean package'
             }
         }
-        stage('Test') {
-            steps {
-                echo 'Running tests...'
-                // Add your test commands here, e.g., sh 'mvn test'
-            }
-        }
         stage('Deploy to Production') {
             when {
                 expression { env.BRANCH_NAME == 'main' }
+                expression { env.DEPLOY_ENV == 'production' }
+            } else {
+                echo 'Skipping deployment: Not on main branch or not in production environment.'
             }
             steps {
                 script {
