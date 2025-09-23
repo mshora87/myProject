@@ -1,28 +1,40 @@
 pipeline {
     agent any
+    parameters {
+        choice(name: 'NUMBER',
+            choices: [10,20,30,40,50,60,70,80,90],
+            description: 'Select the value for F(n) for the Fibonnai sequence.')
+    }
+    options {
+        buildDiscarder(logRotator(daysToKeepStr: '10', numToKeepStr: '10'))
+        timeout(time: 12, unit: 'HOURS')
+        timestamps()
+    }
+    triggers {
+        cron '@midnight'
+    }
     stages {
-        stage('Build') {
+        stage('Make executable') {
             steps {
-                echo 'Building the application...' 
-                echo 'Using credentials securely...'
-                // Add your build commands here, e.g., sh 'mvn clean package'
+                sh('chmod +x ./scripts/fibonacci.sh')
             }
         }
-        stage('Deploy to Production') {
+        stage('Relative path') {
             steps {
-                script {
-                    echo 'Deploying to production environment...'
-                    echo 'Using credentials securely...'
+                sh("./scripts/fibonacci.sh ${env.NUMBER}")
+            }
+        }
+        stage('Full path') {
+            steps {
+                sh("${env.WORKSPACE}/scripts/fibonacci.sh ${env.NUMBER}")
+            }
+        }
+        stage('Change directory') {
+            steps {
+                dir("${env.WORKSPACE}/scripts"){
+                    sh("./fibonacci.sh ${env.NUMBER}")
                 }
             }
-        }
-    }
-    post {
-        success {
-            echo 'Deployment to production was successful!'
-        }
-        failure {
-            echo 'Deployment failed.'
         }
     }
 }
