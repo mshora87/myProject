@@ -24,6 +24,7 @@ pipeline {
                 sh("./scripts/fibonacci.sh ${params.NUMBER}")
             }
         }
+        
         stage('Full path') {
             steps {
                 sh("${env.WORKSPACE}/scripts/fibonacci.sh ${params.NUMBER}")
@@ -32,9 +33,10 @@ pipeline {
         stage('Change directory') {
             steps {
                 dir("${env.WORKSPACE}/scripts"){
-                    sh("./fibonacci.sh ${env.NUMBER}")
+                    sh("./fibonacci.sh ${params.NUMBER}")
                 }
             }
         }
+        
     }
 }
