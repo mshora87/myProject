@@ -1,6 +1,8 @@
 
 pipeline {
-    agent any
+    agent { 
+        docker { image 'alpine:latest' }
+    }
     options {
         buildDiscarder(logRotator(daysToKeepStr: '10', numToKeepStr: '10'))
         timeout(time: 12, unit: 'HOURS')
