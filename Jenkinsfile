@@ -1,7 +1,7 @@
 
 pipeline {
     agent { 
-        docker { image 'ubuntu:22.04:latest' }
+        docker { image 'alpine:latest' }
     }
     options {
         buildDiscarder(logRotator(daysToKeepStr: '10', numToKeepStr: '10'))
@@ -11,10 +11,19 @@ pipeline {
     stages {
         stage('Requirements') {
             steps {
-                // this step is required to make sure the script
-                // can be executed directly in a shell
-                sh('chmod +x ./algorithm.sh')
-                echo "Algorithm script is ready to execute."    
+                script {
+                        docker.image('alpine:latest').inside('-u 0:0') {
+                            sh '''
+                            set -e
+                            # tools for conversion
+                            apk add --no-cache dos2unix
+                            dos2unix algorithm.sh || true
+                            chmod +x algorithm.sh
+                            # If the script is POSIX-compliant, use sh:
+                            /bin/sh ./algorithm.sh
+                            '''
+                        }
+                    }   
             }
         }
         stage('Build') {
