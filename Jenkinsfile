@@ -1,29 +1,32 @@
-
 pipeline {
-    agent { 
-        docker { image 'alpine:latest' }
+    agent { docker 'public.ecr.aws/docker/library/golang:latest' }
+    environment {
+      // moving the cache to the workspace might speed up
+      // the build stage.  maybe use ${env.WORKSPACE}/.build_cache?
+      GOCACHE = "/tmp"
     }
     options {
         buildDiscarder(logRotator(daysToKeepStr: '10', numToKeepStr: '10'))
-        timeout(time: 12, unit: 'HOURS')
+        timeout(time: 1, unit: 'HOURS')
         timestamps()
     }
     stages {
-        stage('Requirements') {
+        stage('Source') {
             steps {
-                echo 'Installing requirements...'
+                sh 'which go'
+                sh 'go version'
+                git branch: 'stable',
+                    url: 'https://github.com/gohugoio/hugo.git'
             }
         }
         stage('Build') {
             steps {
-                // the algorithm script creates a file named report.txt
-                //sh('./algorithm.sh')
-                sh('echo "This is a sample report." > report.txt')  
-                // this step archives the report
-                archiveArtifacts allowEmptyArchive: true,
-                    artifacts: '*.txt',
-                    fingerprint: true,
-                    onlyIfSuccessful: true
+                sh "go build --tags extended"
+            }
+        }
+        stage('Test') {
+            steps {
+                sh './hugo env'
             }
         }
     }
